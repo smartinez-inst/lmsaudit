@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Is it time to re-evaluate your LMS?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutrals with Slate and Muted Teal -->
+    <!-- Application Structure Plan: The application is structured as a continuous scrolling self-assessment. Persona-based sections (Student, Teacher, Administrator) are now stacked vertically. This was done to allow users to complete the entire audit without switching tabs, improving flow. The navigation buttons at the top function as jump links (smooth scroll) to quickly access any section, including the new 'Audit Summary' section. User ratings still instantly update the summary visualization, which remains at the bottom. This structure prioritizes uninterrupted data input and immediate results visualization. -->
+    <!-- Visualization & Content Choices: Report Info: High-level questions for Students, Teachers, and Admins. Goal: Allow users to rate their current LMS against these questions and see a summary of their pain points. Viz/Presentation Method: Interactive cards for each question and a dynamic donut chart for the summary. Interaction: Users click rating buttons on each card, which updates the central chart in real-time. Navigation buttons now use smooth scrolling to jump to stacked sections. Justification: This non-paginated, continuous view supports better comparison across personas and reduces clicks, focusing attention on the data and the resulting summary. Library/Method: Tailwind CSS for layout and styling, Chart.js (Canvas) for the dynamic visualization. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .nav-btn {
+            transition: all 0.3s ease;
+            color: #1e293b; /* Base text color (slate-800 equivalent) */
+        }
+        /* UPDATED: Light teal background (bg-teal-200) and dark teal text (text-teal-900) for active state */
+        .nav-btn-active {
+            background-color: #b2f5ea !important; /* Light shade of teal */
+            color: #134e4a !important; /* Dark teal font */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .rating-btn {
+            transition: all 0.2s ease;
+        }
+        .rating-btn-selected {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px #0d9488;
+        }
+        @import url('https://rsms.me/inter/inter.css');
+        
+        /* Ensure chart container respects constraints */
+        .chart-container {
+            position: relative;
+            width: 100%; 
+            max-width: 400px;
+            height: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="app" class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-teal-800">Is it time to re-evaluate your LMS?</h1>
+            <p class="mt-2 text-slate-600 max-w-3xl mx-auto">This tool will assist you with auditing your current LMS. Rate each question based on your current LMS to visualize your district's pain points and determine if it's time for a new evaluation. You can jump to the different sections by selecting a button below.</p>
+        </header>
+
+        <nav class="sticky top-0 z-10 flex flex-wrap justify-center space-x-2 sm:space-x-4 mb-8 bg-slate-200 p-2 rounded-lg shadow-lg">
+            <button data-target="student-section" class="nav-btn w-full sm:w-auto flex-1 sm:flex-initial text-sm font-semibold py-2 px-4 rounded-md bg-white shadow-sm hover:bg-teal-50 mt-1">
+                🎓 Student Experience
+            </button>
+            <button data-target="teacher-section" class="nav-btn w-full sm:w-auto flex-1 sm:flex-initial text-sm font-semibold py-2 px-4 rounded-md bg-white shadow-sm hover:bg-teal-50 mt-1">
+                🧑‍🏫 Teacher Workflow
+            </button>
+            <button data-target="admin-section" class="nav-btn w-full sm:w-auto flex-1 sm:flex-initial text-sm font-semibold py-2 px-4 rounded-md bg-white shadow-sm hover:bg-teal-50 mt-1">
+                ⚙️ Admin & IT Overhead
+            </button>
+            <button data-target="summary-section" class="nav-btn w-full sm:w-auto flex-1 sm:flex-initial text-sm font-semibold py-2 px-4 rounded-md bg-white shadow-sm hover:bg-teal-50 mt-1">
+                📊 Audit Summary
+            </button>
+        </nav>
+
+        <main class="space-y-12">
+            <div id="student-section" class="persona-section space-y-6 pt-4">
+                <div class="text-center p-4 bg-teal-50 rounded-lg border border-teal-200">
+                    <h2 class="text-2xl font-bold text-teal-700">Student Experience</h2>
+                    <p class="mt-1 text-slate-600 font-bold italic">Focus: Access, Usability, and Engagement</p>
+                    <p class="text-slate-600 text-sm mt-1">These questions evaluate the system from the perspective of the primary end-user: the learner. A struggling student experience often leads to low adoption and poor learning outcomes.</p>
+                </div>
+            </div>
+            <div id="teacher-section" class="persona-section space-y-6 pt-4">
+                <div class="text-center p-4 bg-teal-50 rounded-lg border border-teal-200">
+                    <h2 class="text-2xl font-bold text-teal-700">Teacher Workflow</h2>
+                    <p class="mt-1 text-slate-600 font-bold italic">Focus: Efficiency, Content Management, and Assessment</p>
+                    <p class="text-slate-600 text-sm mt-1">These questions address the daily productivity and instructional capacity of teachers. Time spent fighting the LMS is time taken away from instruction.</p>
+                </div>
+            </div>
+            <div id="admin-section" class="persona-section space-y-6 pt-4">
+                <div class="text-center p-4 bg-teal-50 rounded-lg border border-teal-200">
+                    <h2 class="text-2xl font-bold text-teal-700">Administrator & IT Overhead</h2>
+                    <p class="mt-1 text-slate-600 font-bold italic">Focus: System Management, Security, and Scalability</p>
+                    <p class="text-slate-600 text-sm mt-1">These questions address the strategic, financial, and operational challenges faced by district leadership and IT departments.</p>
+                </div>
+            </div>
+        </main>
+        
+        <section id="summary-section" class="mt-12 pt-8 border-t-2 border-slate-200">
+             <h2 class="text-3xl font-bold text-center text-teal-800 mb-6">Your Audit Summary</h2>
+             <div class="flex flex-col md:flex-row items-center justify-center gap-8 bg-white p-6 rounded-xl shadow-lg">
+                <div class="chart-container w-full max-w-sm h-64 sm:h-80 relative">
+                    <canvas id="summary-chart"></canvas>
+                </div>
+                <div class="text-center md:text-left">
+                    <h3 class="text-2xl font-semibold text-slate-700">Analysis</h3>
+                    <p id="summary-text" class="mt-2 text-slate-600 max-w-md">
+                        Begin rating the questions above to see your results. Your summary will appear here, providing a clear indication of your readiness to evaluate a new LMS.
+                    </p>
+                </div>
+             </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const questions = {
+                student: [
+                    { category: 'Usability & Access', question: 'How easy is it for a student to access and use the platform on a mobile phone or tablet (responsive design)?', note: 'If mobile access is cumbersome, equity and homework completion suffer.' },
+                    { category: 'Navigation & Clarity', question: 'How easy is it for a student to determine their current grade, find all due dates, and understand what they need to work on next?', note: 'If navigation is confusing, students miss assignments.' },
+                    { category: 'Engagement', question: 'Do students feel the LMS facilitates effective communication and collaboration with their peers and instructors?', note: 'If communication happens outside the LMS, it creates data silos.' },
+                    { category: 'Reliability', question: 'How frequently are students locked out, receiving error messages, or unable to submit work due to system instability or downtime?', note: 'Unreliable systems cause frustration and increase teacher workload.' }
+                ],
+                teacher: [
+                    { category: 'Time Investment', question: 'Do daily or weekly tasks (e.g., grading, posting announcements) consume a lot of instructional planning time due to the LMS interface?', note: 'Identify the biggest bottlenecks in the teaching day.' },
+                    { category: 'Assessment & Feedback', question: 'How simple is it to create, grade, and return detailed feedback (including using rubrics) directly within the platform?', note: 'If grading is manual or requires multiple downloads, teacher burnout is high.' },
+                    { category: 'EdTech Integration', question: 'Does the current LMS easily and reliably integrate with the external EdTech tools and apps your teachers rely on?', note: 'If teachers manage multiple logins, integration is broken.' },
+                    { category: 'Data and Insights', question: 'Can teachers quickly pull meaningful data on student engagement and performance trends without creating complex custom reports?', note: 'If data is static or hidden, it cannot inform real-time instruction.' }
+                ],
+                admin: [
+                    { category: 'Integration & SIS Sync', question: 'How much IT staff time (per week/month) is spent manually synchronizing data between the LMS and the Student Information System (SIS)?', note: 'High manual sync time represents an unnecessary operational cost.' },
+                    { category: 'Security & Compliance', question: 'Are there any features currently missing that create difficulty in adhering to student data privacy regulations (like FERPA)?', note: 'An inability to meet compliance is a major, non-negotiable risk.' },
+                    { category: 'Vendor Support & Cost', question: 'Has the total cost of ownership (TCO), including licensing and support fees, increased disproportionately to the value received?', note: 'Evaluate the ROI and support responsiveness.' },
+                    { category: 'Future Readiness', question: 'Does the current LMS limit the district\'s ability to adopt and scale future learning models, such as competency-based education?', note: 'The LMS should enable future strategy, not restrict it.' }
+                ]
+            };
+
+            const state = {
+                ratings: {},
+                activeTarget: null // Changed to null: no button active on load
+            };
+
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const summaryText = document.getElementById('summary-text');
+
+            const createQuestionCard = (q, persona, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-5 rounded-lg shadow-md border border-slate-200';
+                card.innerHTML = `
+                    <p class="text-sm font-semibold text-teal-600">${q.category}</p>
+                    <p class="mt-1 font-semibold text-lg text-slate-800">${index + 1}. ${q.question}</p>
+                    <p class="mt-2 text-sm text-slate-500">${q.note}</p>
+                    <div class="mt-4 flex flex-col sm:flex-row gap-2" data-persona="${persona}" data-index="${index}">
+                        <button class="rating-btn flex-1 py-2 px-3 text-sm font-medium rounded-md bg-green-100 text-green-800 hover:bg-green-200" data-rating="good">✅ No Issues</button>
+                        <button class="rating-btn flex-1 py-2 px-3 text-sm font-medium rounded-md bg-yellow-100 text-yellow-800 hover:bg-yellow-200" data-rating="okay">🟡 Some Friction</button>
+                        <button class="rating-btn flex-1 py-2 px-3 text-sm font-medium rounded-md bg-red-100 text-red-800 hover:bg-red-200" data-rating="pain">🔴 Major Pain Point</button>
+                    </div>
+                `;
+                return card;
+            };
+
+            Object.keys(questions).forEach(persona => {
+                const section = document.getElementById(`${persona}-section`);
+                questions[persona].forEach((q, index) => {
+                    section.appendChild(createQuestionCard(q, persona, index));
+                });
+            });
+
+            const ctx = document.getElementById('summary-chart').getContext('2d');
+            const summaryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['No Issues', 'Some Friction', 'Major Pain Points'],
+                    datasets: [{
+                        label: 'LMS Audit Results',
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgb(74, 222, 128)', 
+                            'rgb(250, 204, 21)',  
+                            'rgb(239, 68, 68)'    
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            function updateChartAndSummary() {
+                const counts = { good: 0, okay: 0, pain: 0 };
+                Object.values(state.ratings).forEach(rating => {
+                    if (rating) counts[rating]++;
+                });
+
+                summaryChart.data.datasets[0].data = [counts.good, counts.okay, counts.pain];
+                summaryChart.update();
+
+                const total = counts.good + counts.okay + counts.pain;
+                if (total === 0) {
+                    summaryText.textContent = 'Begin rating the questions above to see your results. Your summary will appear here.';
+                    return;
+                }
+
+                const painPercentage = total > 0 ? ((counts.pain + counts.okay * 0.5) / total) * 100 : 0;
+
+                if (painPercentage > 60) {
+                    summaryText.textContent = 'Your results show significant and widespread pain points across key areas. It is highly recommended to begin a formal LMS evaluation process soon.';
+                } else if (painPercentage > 30) {
+                    summaryText.textContent = 'There are noticeable friction points in your current LMS. While not critical, these issues are likely impacting efficiency and user satisfaction. An evaluation is advisable.';
+                } else {
+                    summaryText.textContent = 'Your current LMS appears to be meeting most needs effectively, with only minor issues. Focus on addressing specific pain points before considering a full-scale evaluation.';
+                }
+            }
+
+            document.querySelector('#app').addEventListener('click', (e) => {
+                if (e.target.closest('.rating-btn')) {
+                    const button = e.target.closest('.rating-btn');
+                    const { persona, index } = button.parentElement.dataset;
+                    const { rating } = button.dataset;
+                    const key = `${persona}-${index}`;
+                    
+                    state.ratings[key] = rating;
+
+                    const allButtonsInGroup = button.parentElement.querySelectorAll('.rating-btn');
+                    allButtonsInGroup.forEach(btn => btn.classList.remove('rating-btn-selected'));
+                    button.classList.add('rating-btn-selected');
+                    
+                    updateChartAndSummary();
+                }
+
+                if (e.target.closest('.nav-btn')) {
+                    const button = e.target.closest('.nav-btn');
+                    const targetId = button.dataset.target;
+                    
+                    // 1. Update Active State
+                    navButtons.forEach(btn => {
+                        btn.classList.remove('nav-btn-active');
+                    });
+                    button.classList.add('nav-btn-active');
+                    state.activeTarget = targetId;
+
+                    // 2. Scroll to Target Section
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                         targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+
+            // Removed initial button selection to meet user requirement
+            updateChartAndSummary();
+        });
+    </script>
+</body>
+</html>
