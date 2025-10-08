@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Chosen Palette: Warm Neutrals with Slate and Muted Teal -->
-    <!-- Application Structure Plan: The application is structured as a continuous scrolling self-assessment. Persona-based sections (Student, Teacher, Administrator) are now stacked vertically. This was done to allow users to complete the entire audit without switching tabs, improving flow. The navigation buttons at the top function as jump links (smooth scroll) to quickly access any section, including the new 'Audit Summary' section. User ratings still instantly update the summary visualization, which remains at the bottom. This structure prioritizes uninterrupted data input and immediate results visualization. -->
-    <!-- Visualization & Content Choices: Report Info: High-level questions for Students, Teachers, and Admins. Goal: Allow users to rate their current LMS against these questions and see a summary of their pain points. Viz/Presentation Method: Interactive cards for each question and a dynamic donut chart for the summary. Interaction: Users click rating buttons on each card, which updates the central chart in real-time. Navigation buttons now use smooth scrolling to jump to stacked sections. Justification: This non-paginated, continuous view supports better comparison across personas and reduces clicks, focusing attention on the data and the resulting summary. Library/Method: Tailwind CSS for layout and styling, Chart.js (Canvas) for the dynamic visualization. -->
+    <!-- Application Structure Plan: The application is structured as a continuous scrolling self-assessment. Persona-based sections (Student, Teacher, C&I Leader, IT Admin) are now stacked vertically. This was done to allow users to complete the entire audit without switching tabs, improving flow. The navigation buttons at the top function as jump links (smooth scroll) to quickly access any section, including the new 'Audit Summary' section. User ratings still instantly update the summary visualization, which remains at the bottom. This structure prioritizes uninterrupted data input and immediate results visualization. -->
+    <!-- Visualization & Content Choices: Report Info: High-level questions for Students, Teachers, C&I Leaders, and IT Admins. Goal: Allow users to rate their current LMS against these questions and see a summary of their pain points. Viz/Presentation Method: Interactive cards for each question and a dynamic donut chart for the summary. Interaction: Users click rating buttons on each card, which updates the central chart in real-time. Navigation buttons now use smooth scrolling to jump to stacked sections. Justification: This non-paginated, continuous view supports better comparison across personas and reduces clicks, focusing attention on the data and the resulting summary. Library/Method: Tailwind CSS for layout and styling, Chart.js (Canvas) for the dynamic visualization. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -61,8 +61,11 @@
             <button data-target="teacher-section" class="nav-btn w-full sm:w-auto flex-1 sm:flex-initial text-sm font-semibold py-2 px-4 rounded-md bg-white shadow-sm hover:bg-teal-50 mt-1">
                 🧑‍🏫 Teacher Workflow
             </button>
+            <button data-target="c-i-leader-section" class="nav-btn w-full sm:w-auto flex-1 sm:flex-initial text-sm font-semibold py-2 px-4 rounded-md bg-white shadow-sm hover:bg-teal-50 mt-1">
+                📚 C&I Leadership
+            </button>
             <button data-target="admin-section" class="nav-btn w-full sm:w-auto flex-1 sm:flex-initial text-sm font-semibold py-2 px-4 rounded-md bg-white shadow-sm hover:bg-teal-50 mt-1">
-                ⚙️ Admin & IT Overhead
+                ⚙️ IT Admin Overhead
             </button>
             <button data-target="summary-section" class="nav-btn w-full sm:w-auto flex-1 sm:flex-initial text-sm font-semibold py-2 px-4 rounded-md bg-white shadow-sm hover:bg-teal-50 mt-1">
                 📊 Audit Summary
@@ -84,9 +87,20 @@
                     <p class="text-slate-600 text-sm mt-1">These questions address the daily productivity and instructional capacity of teachers. Time spent fighting the LMS is time taken away from instruction.</p>
                 </div>
             </div>
+
+            <!-- C&I LEADER SECTION -->
+            <div id="c-i-leader-section" class="persona-section space-y-6 pt-4">
+                <div class="text-center p-4 bg-teal-50 rounded-lg border border-teal-200">
+                    <h2 class="text-2xl font-bold text-teal-700">C&I Leadership</h2>
+                    <p class="mt-1 text-slate-600 font-bold italic">Focus: Pedagogical Alignment and Instructional Data Flow</p>
+                    <p class="text-slate-600 text-sm mt-1">These questions ensure the LMS supports the district's modern teaching philosophy and provides the deep data necessary for continuous curriculum improvement.</p>
+                </div>
+            </div>
+            <!-- END C&I LEADER SECTION -->
+
             <div id="admin-section" class="persona-section space-y-6 pt-4">
                 <div class="text-center p-4 bg-teal-50 rounded-lg border border-teal-200">
-                    <h2 class="text-2xl font-bold text-teal-700">Administrator & IT Overhead</h2>
+                    <h2 class="text-2xl font-bold text-teal-700">IT Admin Overhead</h2>
                     <p class="mt-1 text-slate-600 font-bold italic">Focus: System Management, Security, and Scalability</p>
                     <p class="text-slate-600 text-sm mt-1">These questions address the strategic, financial, and operational challenges faced by district leadership and IT departments.</p>
                 </div>
@@ -125,17 +139,23 @@
                     { category: 'EdTech Integration', question: 'Does the current LMS easily and reliably integrate with the external EdTech tools and apps your teachers rely on?', note: 'If teachers manage multiple logins, integration is broken.' },
                     { category: 'Data and Insights', question: 'Can teachers quickly pull meaningful data on student engagement and performance trends without creating complex custom reports?', note: 'If data is static or hidden, it cannot inform real-time instruction.' }
                 ],
+                'c-i-leader': [
+                    { category: 'Instructional Model Support', question: 'Does it support various teaching models like project-based learning, competency-based learning, or blended learning?', note: 'If the LMS forces traditional pacing, it hinders modern pedagogical shifts.' },
+                    { category: 'Assessment Integration', question: 'How well does the current LMS integrate with your formative and benchmark tools?', note: 'Manual data transfer from assessment tools prevents timely instructional adjustments.' },
+                    { category: 'Training & Readiness', question: 'Do staff have training and support resources available to ensure successful adoption and ongoing use?', note: 'Lack of centralized, accessible training leads to inconsistent use and low ROI.' },
+                    { category: 'K-20 Consistency', question: 'Does your current LMS align with the platform students will use as they advance through their academic career?', note: 'Inconsistent platforms between educational levels (e.g., K-5 vs. 6-12 vs. Higher Education) disrupt student readiness and require extra training.' }
+                ],
                 admin: [
                     { category: 'Integration & SIS Sync', question: 'How much IT staff time (per week/month) is spent manually synchronizing data between the LMS and the Student Information System (SIS)?', note: 'High manual sync time represents an unnecessary operational cost.' },
-                    { category: 'Security & Compliance', question: 'Are there any features currently missing that create difficulty in adhering to student data privacy regulations (like FERPA)?', note: 'An inability to meet compliance is a major, non-negotiable risk.' },
+                    { category: 'Security and Data Privacy', question: 'Are there concerns with the platform meeting the highest standards for data security and privacy?', note: 'An inability to meet student data privacy is a major, non-negotiable risk.' },
                     { category: 'Vendor Support & Cost', question: 'Has the total cost of ownership (TCO), including licensing and support fees, increased disproportionately to the value received?', note: 'Evaluate the ROI and support responsiveness.' },
-                    { category: 'Future Readiness', question: 'Does the current LMS limit the district\'s ability to adopt and scale future learning models, such as competency-based education?', note: 'The LMS should enable future strategy, not restrict it.' }
+                    { category: 'Reporting & Analytics', question: 'Does the platform provide robust data dashboards for district-level analysis, not just classroom-level reports?', note: 'Without district-level dashboards, strategic decisions rely on cumbersome, manually aggregated data.' }
                 ]
             };
 
             const state = {
                 ratings: {},
-                activeTarget: null // Changed to null: no button active on load
+                activeTarget: null
             };
 
             const navButtons = document.querySelectorAll('.nav-btn');
@@ -159,9 +179,11 @@
 
             Object.keys(questions).forEach(persona => {
                 const section = document.getElementById(`${persona}-section`);
-                questions[persona].forEach((q, index) => {
-                    section.appendChild(createQuestionCard(q, persona, index));
-                });
+                if (section) {
+                    questions[persona].forEach((q, index) => {
+                        section.appendChild(createQuestionCard(q, persona, index));
+                    });
+                }
             });
 
             const ctx = document.getElementById('summary-chart').getContext('2d');
@@ -269,7 +291,6 @@
                 }
             });
 
-            // Removed initial button selection to meet user requirement
             updateChartAndSummary();
         });
     </script>
